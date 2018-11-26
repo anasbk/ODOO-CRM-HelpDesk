@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="act_product_2_crm_helpdesk" model="ir.actions.act_window">
+            <field name="name">CRM SAV</field>
+            <field name="res_model">crm.helpdesk</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="context">{'search_default_article_id': active_id}</field>
+            <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Create a new claim for this product.
+              </p>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="product_template_extend_view">
+            <field name="name">view.product.extend.form.inherit</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="action" name="%(crm_helpdesk.act_product_2_crm_helpdesk)d"
+                        icon="fa-star">
+                        <field string="SAV" name="crm_helpdesk_count" widget="statinfo"/>
+                    </button>
+                </div>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="supplier_id" options="{'no_quick_create':True,'no_create_edit':True}" domain="[('supplier','=', True)]" context="{'default_supplier': True, 'default_supplier': False}" placeholder="Fournisseur"/>
+                    <div>
+                        <field name="lgs"/>
+                        <label for="lgs"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <menuitem
+            id="menu_crm_product"
+            action="product.product_template_action_all"
+            name="Produit"
+            parent="crm_helpdesk.menu_crm_setting"
+            sequence="5"
+            groups="sales_team.group_sale_manager"/>
+
+
+    </data>
+</odoo>
+

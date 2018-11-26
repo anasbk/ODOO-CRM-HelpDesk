@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="act_res_partner_2_crm_helpdesk" model="ir.actions.act_window">
+            <field name="name">CRM SAV</field>
+            <field name="res_model">crm.helpdesk</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="domain">[('res_partner_id', '=', user.partner_id.id)]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Créer une reclamation pour ce client
+              </p>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="customer_facebook_comment_tree_view">
+            <field name="name">comments list</field>
+            <field name="model">customer.facebook.comment</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="message_str"/>
+                    <field name="comment_url" widget ="url"/>
+                    <field name="like_type"/>
+                    <field name="deleted"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="customer_facebook_like_tree_view">
+            <field name="name">likes list</field>
+            <field name="model">customer.facebook.like</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="post_url" widget ="url"/>
+                    <field name="like_type"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="act_res_partner_2_facebook_like3" model="ir.actions.act_window">
+            <field name="name">facebook likes</field>
+            <field name="res_model">customer.facebook.like</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="view_id" ref="customer_facebook_like_tree_view"></field>
+            <field name="domain">[['like_type', 'in', ['LOVE','HAHA','LIKE','WOW']]]</field>
+        </record>
+
+        <record id="act_res_partner_2_facebook_dislike" model="ir.actions.act_window">
+            <field name="name">facebook dislikes</field>
+            <field name="res_model">customer.facebook.like</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="view_id" ref="customer_facebook_like_tree_view"></field>
+            <field name="domain">[['like_type', 'in', ['SAD','ANGRY']]]</field>
+        </record>
+
+
+
+
+        <record id="act_res_partner_2_facebook_comment" model="ir.actions.act_window">
+            <field name="name">facebook likes</field>
+            <field name="res_model">customer.facebook.comment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="view_id" ref="customer_facebook_comment_tree_view"></field>
+        </record>
+
+
+
+        <record model="ir.ui.view" id="view_res_partner_extend_filter">
+            <field name="name">view.partner.extend.filter.inherit</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='supplier']" position="after">
+                    <filter string="Vendeurs" name="seller" domain="[('seller','=',1), ('parent_id', '=', False)]"/>
+                   <filter string="Transporteurs" name="carrier" domain="[('carrier','=',1), ('parent_id', '=', False)]"/>
+                   <filter string="Magasin" name="store" domain="[('store','=',1), ('parent_id', '=', False)]"/>
+                    <separator/>
+                   <filter string="LGS" name="lgs" domain="[('lgs','=',1)]"/>
+                   <filter string="Not LGS" name="lgs" domain="[('lgs','=',0)]"/>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="store_id" string="Dans Magasin"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_partner_extend_tree">
+            <field name="name">view.partner.extend.tree.inherit</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="before">
+                    <field name="ref"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_partner_extend_form">
+            <field name="name">view.partner.extend.form.inherit</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="action" name="%(crm_helpdesk.act_res_partner_2_crm_helpdesk)d"
+                        attrs="{'invisible': [('customer', '=', False)]}"
+                        icon="fa-star">
+                        <field string="SAV" name="crm_helpdesk_count" widget="statinfo"/>
+                    </button>
+                </div>
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="action" name="%(crm_helpdesk.act_res_partner_2_facebook_like3)d"
+                        attrs="{'invisible': [('customer', '=', False)]}"
+                        icon="fa-smile-o">
+                        <field string="Likes" name="crm_likes_count" widget="statinfo"/>
+                    </button>
+                </div>
+                 <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="action" name="%(crm_helpdesk.act_res_partner_2_facebook_dislike)d"
+                        attrs="{'invisible': [('customer', '=', False)]}"
+                        icon="fa-frown-o">
+                        <field string="Dislikes" name="crm_dislikes_count" widget="statinfo"/>
+                    </button>
+                </div>
+                 <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="action" name="%(crm_helpdesk.act_res_partner_2_facebook_comment)d"
+                        attrs="{'invisible': [('customer', '=', False)]}"
+                        icon="fa-comment-o">
+                        <field string="Comments" name="crm_comments_count" widget="statinfo"/>
+                    </button>
+                </div>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="store_id" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'invisible': [('customer', '=', False)]}" domain="[('store','=', True)]" context="{'default_store': True, 'default_customer': False}" placeholder="Magasin"/>
+                    <div attrs="{'invisible': [('supplier', '=', False)]}">
+                        <field name="lgs"/>
+                        <label for="lgs"/>
+                    </div>
+                </xpath>
+                <xpath expr="//group[@name='container_row_2']/group[2]" position="after">
+                    <group string="Vendeur" name="Carrier">
+                            <field name="seller"/>
+                    </group>
+                    <group string="Transporteur" name="Carrier">
+                            <field name="carrier"/>
+                    </group>
+                    <group string="Magasin" name="Carrier">
+                            <field name="store"/>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="after">
+                    <field name="birth_date" attrs="{'invisible': [('customer', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='ref']" position="after">
+                    <field name="card_nbr" attrs="{'invisible': [('customer', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='lang']" position="after">
+                    <field name="sav_phone" attrs="{'invisible': [('store', '=', False)]}"/>
+                    <field name="sav_resp" attrs="{'invisible': [('store', '=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_res_partner_supplier_tree" model="ir.actions.act_window">
+            <field name="name">Fournisseur</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{"search_default_supplier":1,'default_customer': 0,'default_supplier': 1}</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="filter" eval="True"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a Supplier.
+              </p>
+            </field>
+        </record>
+
+        <record id="action_res_partner_seller_tree" model="ir.actions.act_window">
+            <field name="name">Vendeur</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{"search_default_seller":1,'default_customer': 0,'default_supplier': 0,'default_seller': 1}</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="filter" eval="True"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a Seller.
+              </p>
+            </field>
+        </record>
+
+        <record id="action_res_partner_carrier_tree" model="ir.actions.act_window">
+            <field name="name">Transporteur</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{"search_default_carrier":1,'default_customer': 0,'default_supplier': 0,'default_carrier': 1}</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="filter" eval="True"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a Carrier.
+              </p>
+            </field>
+        </record>
+
+        <record id="action_res_partner_store_tree" model="ir.actions.act_window">
+            <field name="name">Magasin</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{"search_default_store":1,'default_customer': 0,'default_supplier': 0,'default_store': 1}</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="filter" eval="True"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a Store.
+              </p>
+            </field>
+        </record>
+
+
+
+        <menuitem
+            id="menu_crm_setting"
+            name="CRM"
+            parent="sales_team.menu_sale_config"
+            sequence="6"
+            groups="sales_team.group_sale_manager"/>
+
+        <menuitem
+            id="menu_crm_supplier"
+            action="action_res_partner_supplier_tree"
+            name="Fournisseur"
+            parent="crm_helpdesk.menu_crm_setting"
+            sequence="6"
+            groups="sales_team.group_sale_manager"/>
+
+        <menuitem
+            id="menu_crm_seller"
+            action="action_res_partner_seller_tree"
+            name="Vendeur"
+            parent="crm_helpdesk.menu_crm_setting"
+            sequence="6"
+            groups="sales_team.group_sale_manager"/>
+
+        <menuitem
+            id="menu_crm_carrier"
+            action="action_res_partner_carrier_tree"
+            name="Transporteur"
+            parent="crm_helpdesk.menu_crm_setting"
+            sequence="7"
+            groups="sales_team.group_sale_manager"/>
+
+        <menuitem
+            id="menu_crm_store"
+            action="action_res_partner_store_tree"
+            name="Magasin"
+            parent="crm_helpdesk.menu_crm_setting"
+            sequence="7"
+            groups="sales_team.group_sale_manager"/>
+
+    </data>
+</odoo>
+
